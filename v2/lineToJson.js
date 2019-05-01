@@ -6,10 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var CSVError_1 = __importDefault(require("./CSVError"));
 var set_1 = __importDefault(require("lodash/set"));
 var numReg = /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/;
-function default_1(csvRows, conv) {
+async function default_1(csvRows, conv) {
     var res = [];
     for (var i = 0, len = csvRows.length; i < len; i++) {
-        var r = processRow(csvRows[i], conv, i);
+        var r = await processRow(csvRows[i], conv, i);
         if (r) {
             res.push(r);
         }
@@ -18,12 +18,12 @@ function default_1(csvRows, conv) {
 }
 exports.default = default_1;
 ;
-function processRow(row, conv, index) {
+async function processRow(row, conv, index) {
     if (conv.parseParam.checkColumn && conv.parseRuntime.headers && row.length !== conv.parseRuntime.headers.length) {
         throw (CSVError_1.default.column_mismatched(conv.parseRuntime.parsedLineNumber + index));
     }
     var headRow = conv.parseRuntime.headers || [];
-    var resultRow = convertRowToJson(row, headRow, conv);
+    var resultRow = await convertRowToJson(row, headRow, conv);
     if (resultRow) {
         return resultRow;
     }
@@ -31,7 +31,7 @@ function processRow(row, conv, index) {
         return null;
     }
 }
-function convertRowToJson(row, headRow, conv) {
+async function convertRowToJson(row, headRow, conv) {
     var hasValue = false;
     var resultRow = {};
     for (var i = 0, len = row.length; i < len; i++) {
@@ -46,7 +46,7 @@ function convertRowToJson(row, headRow, conv) {
         }
         var convFunc = getConvFunc(head, i, conv);
         if (convFunc) {
-            var convRes = convFunc(item, head, resultRow, row, i);
+            var convRes = await convFunc(item, head, resultRow, row, i);
             if (convRes !== undefined) {
                 setPath(resultRow, head, convRes, conv, i);
             }
