@@ -42,7 +42,7 @@ async function convertRowToJson(row, headRow, conv) {
         hasValue = true;
         var head = headRow[i];
         if (!head || head === "") {
-            head = headRow[i] = "field" + (i + 1);
+            continue;
         }
         var convFunc = getConvFunc(head, i, conv);
         if (convFunc) {
