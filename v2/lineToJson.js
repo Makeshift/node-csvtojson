@@ -23,6 +23,7 @@ async function processRow(row, conv, index) {
         throw (CSVError_1.default.column_mismatched(conv.parseRuntime.parsedLineNumber + index));
     }
     var headRow = conv.parseRuntime.headers || [];
+    conv.parseParam.colParser = await conv.parseParam.colParser;
     var resultRow = await convertRowToJson(row, headRow, conv);
     if (resultRow) {
         return resultRow;
@@ -75,7 +76,7 @@ async function convertRowToJson(row, headRow, conv) {
 var builtInConv = {
     "string": stringType,
     "number": numberType,
-    "omit": function () { }
+    "omit": async function () { }
 };
 function getConvFunc(head, i, conv) {
     if (conv.parseRuntime.columnConv[i] !== undefined) {
